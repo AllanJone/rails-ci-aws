@@ -8,12 +8,16 @@ jobs:
     needs: job1
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Trigger AWS CodePipeline
-        uses: zulhfreelancer/aws-codepipeline-action@vX.X.X
-        if: github.ref == 'refs/heads/your-branch-name'
-        with:
-          aws-region: ${{ env.REGION }}
-          aws-access-key: ${{ secrets.AWS_PIPELINE_ACCESS_KEY }}
-          aws-secret-key: ${{ secrets.AWS_PIPELINE_SECRET_KEY }}
-          pipeline-name: ${{ env.PIPELINE_NAME }}
+    - uses: actions/checkout@v2
+    - name: Configure AWS Credentials
+      # v1
+      uses: aws-actions/configure-aws-credentials@cefc5912bc61e2b5a3b049c839fc283c7712d4e0
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        aws-region: ${{ env.REGION }}
+    - name: Trigger AWS CodePipeline
+      uses: zulhfreelancer/aws-codepipeline-action@vX.X.X
+      if: github.ref == 'refs/heads/your-branch-name'
+      with:
+        pipeline-name: ${{ env.PIPELINE_NAME }}
