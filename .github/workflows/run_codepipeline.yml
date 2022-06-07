@@ -16,10 +16,10 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
         aws-region: ${{ env.REGION }}
-    - name: Build
-      uses: aws-actions/aws-codebuild-run-build@0a2ddc3a24e0f6b41d4a61635d87dcb2482c7b49
-      with:
-        project-name: ${{ env.BUILD_PROJECT_NAME }}
+    # - name: Build
+    #   uses: aws-actions/aws-codebuild-run-build@0a2ddc3a24e0f6b41d4a61635d87dcb2482c7b49
+    #   with:
+    #     project-name: ${{ env.BUILD_PROJECT_NAME }}
     - name: Test
       uses: aws-actions/aws-codebuild-run-build@0a2ddc3a24e0f6b41d4a61635d87dcb2482c7b49
       with:
