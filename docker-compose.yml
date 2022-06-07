@@ -34,7 +34,7 @@ services:
       - "3035:3035"
 
   db:
-    image: mysql:8.0.27
+    image: mysql:5.7
     container_name: db
     environment:
       TZ: Asia/Tokyo
