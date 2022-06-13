@@ -18,21 +18,14 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build --target production --cache-from build:latest --build-arg SECRET_KEY_BASE=$SECRET_KEY_BASE --build-arg BUILDKIT_INLINE_CACHE=1 -t $IMAGE_NAME:$IMAGE_TAG .
-      - docker build --target build --cache-from build:latest --build-arg SECRET_KEY_BASE=$SECRET_KEY_BASE --build-arg BUILDKIT_INLINE_CACHE=1 -t build:latest .
-      - docker tag $IMAGE_NAME:$IMAGE_TAG $AWS_ECR_BUILD_REPOSITORY:$IMAGE_TAG
-      - docker tag $IMAGE_NAME:$IMAGE_TAG $AWS_ECR_BUILD_REPOSITORY:staging
-      - docker tag build:latest $AWS_ECR_BUILD_REPOSITORY:latest
+      - docker build --file Dockerfile --cache-from $REPO_URL:$REF_NAME --tag $REPO_URL:$REF_NAME .
 
   post_build:
     commands:
       - echo Build completed on `data`
       - echo Pushing the Docker image...
-      - docker images
-      - docker push $AWS_ECR_BUILD_REPOSITORY:latest
-      - docker push $AWS_ECR_BUILD_REPOSITORY:$IMAGE_TAG
-      - docker push $AWS_ECR_BUILD_REPOSITORY:staging
-      - echo "[{\"name\":\"sample-rails\",\"imageUri\":\"${AWS_ECR_BUILD_REPOSITORY}:${IMAGE_TAG}\"}]" > imagedefinitions.json
+      - docker push $AWS_ECR_BUILD_REPOSITORY:$REF_NAME
+      - echo "[{\"name\":\"rails\",\"imageUri\":\"${AWS_ECR_BUILD_REPOSITORY}:${REF_NAME}\"}]" > imagedefinitions.json
 
 artifacts:
   files:
