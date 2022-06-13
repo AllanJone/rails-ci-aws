@@ -9,23 +9,20 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-      - docker pull $AWS_ECR_BUILD_REPOSITORY:latest
-      - docker tag $AWS_ECR_BUILD_REPOSITORY:latest build:latest
-
-      - IMAGE_TAG=$(echo ${CODEBUILD_RESOLVED_SOURCE_VERSION} | head -c 7)
+      - docker pull $AWS_ECR_BUILD_REPOSITORY:$IMAGE_TAG || true
 
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build --file Dockerfile --cache-from $REPO_URL:$REF_NAME --tag $REPO_URL:$REF_NAME .
+      - docker build --file Dockerfile --cache-from $AWS_ECR_BUILD_REPOSITORY:$IMAGE_TAG --tag $AWS_ECR_BUILD_REPOSITORY:$IMAGE_TAG .
 
   post_build:
     commands:
       - echo Build completed on `data`
       - echo Pushing the Docker image...
-      - docker push $AWS_ECR_BUILD_REPOSITORY:$REF_NAME
-      - echo "[{\"name\":\"rails\",\"imageUri\":\"${AWS_ECR_BUILD_REPOSITORY}:${REF_NAME}\"}]" > imagedefinitions.json
+      - docker push $AWS_ECR_BUILD_REPOSITORY:$IMAGE_TAG
+      - echo "[{\"name\":\"rails\",\"imageUri\":\"${AWS_ECR_BUILD_REPOSITORY}:${IMAGE_TAG}\"}]" > imagedefinitions.json
 
 artifacts:
   files:
